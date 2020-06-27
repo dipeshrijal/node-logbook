@@ -1,0 +1,66 @@
+{
+	"info": {
+		"_postman_id": "0d8d5d52-6291-487b-8978-9c96cff244ef",
+		"name": "Import",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:5000/import",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "name",
+						"value": "name",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "ticker",
+							"value": "{{ticker}}",
+							"type": "text"
+						},
+						{
+							"key": "type",
+							"value": "{{action}}",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "{{amount}}",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "{{price}}",
+							"type": "text"
+						},
+						{
+							"key": "broker",
+							"value": "{{broker}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:4000/import",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"import"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
