@@ -4,7 +4,7 @@ const MongoClient = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectID;
 const cors = require('cors');
 // const CONNECTION_URL = "mongodb+srv://test:test@sbx-nkmpm.azure.mongodb.net/logbook?retryWrites=true&w=majority";
-const CONNECTION_URL = "mongodb://localhost:27017";
+const CONNECTION_URL = "mongodb+srv://test:test@sbx-nkmpm.azure.mongodb.net/<dbname>?retryWrites=true&w=majority";
 const DATABASE_NAME = "logbook";
 const _ = require('lodash');
 
