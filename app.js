@@ -4,7 +4,7 @@ const MongoClient = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectID;
 const cors = require('cors');
 // const CONNECTION_URL = "mongodb+srv://test:test@sbx-nkmpm.azure.mongodb.net/logbook?retryWrites=true&w=majority";
-const CONNECTION_URL = "mongodb+srv://test:test@sbx-nkmpm.azure.mongodb.net/<dbname>?retryWrites=true&w=majority";
+const CONNECTION_URL = "mongodb://localhost:27017";
 const DATABASE_NAME = "logbook";
 const _ = require('lodash');
 
@@ -45,7 +45,7 @@ app.post("/import", async (request, response) => {
 
     let ticker = await collection.find({ "ticker": request.body.ticker }).toArray();
 
-    console.log(ticker)
+    // let type = request.body.type.trim();
 
     let type = "Buy";
 
@@ -73,7 +73,6 @@ app.post("/import", async (request, response) => {
                 response.send(result.result);
             });
     } else {
-        console.log("no ticker");
         let obj = {
             ticker: request.body.ticker,
             transactions: [
