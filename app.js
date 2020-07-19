@@ -97,12 +97,24 @@ app.post("/import", async (request, response) => {
 
 app.get("/", (request, response) => {
     // response.json({ name: "good" })
-    collection.find({}).toArray((error, result) => {
-        if (error) {
-            return response.status(500).send(error);
-        }
-        response.send(result);
-    });
+    let query = request.params.query;
+    console.log(query);
+
+    if (query) {
+        collection.find({ ticker: query }).toArray((error, result) => {
+            if (error) {
+                return response.status(500).send(error);
+            }
+            response.send(result);
+        });
+    } else {
+        collection.find({}).toArray((error, result) => {
+            if (error) {
+                return response.status(500).send(error);
+            }
+            response.send(result);
+        });
+    }
 });
 
 app.get("/:id", (request, response) => {
