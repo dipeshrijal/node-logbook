@@ -3,8 +3,8 @@ const BodyParser = require("body-parser");
 const MongoClient = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectID;
 const cors = require('cors');
-// const CONNECTION_URL = "mongodb+srv://test:test@sbx-nkmpm.azure.mongodb.net/logbook?retryWrites=true&w=majority";
-const CONNECTION_URL = "mongodb://localhost:27017";
+const CONNECTION_URL = "mongodb+srv://logbook:logbook@sbx.nkmpm.azure.mongodb.net/<dbname>?retryWrites=true&w=majority";
+// const CONNECTION_URL = "mongodb://localhost:27017";
 const DATABASE_NAME = "logbook";
 const _ = require('lodash');
 
@@ -43,26 +43,30 @@ app.get("/health", (request, response) => {
 
 app.post("/import", async (request, response) => {
 
-    let ticker = await collection.find({ "ticker": request.body.ticker }).toArray();
+    let t = request.body.ticker.split(" ")[0];
+    let ticker = await collection.find({ "ticker": t }).toArray();
 
-    // let type = request.body.type.trim();
+    let action = "Buy";
 
-    let type = "Buy";
-
-    if (request.body.type.startsWith("Sold")) {
-        type = "Sell"
+    if (request.body.description.startsWith("Sold")) {
+        action = "Sell"
     }
 
     if (ticker.length > 0) {
         collection.updateOne(
-            { ticker: request.body.ticker },
+            { ticker: t },
             {
                 $push: {
                     transactions: {
+                        quantity: request.body.quantity,
+                        description: request.body.description,
                         amount: request.body.amount,
-                        price: Math.abs(request.body.price),
+                        action: action,
+                        price: request.body.price,
                         broker: request.body.broker,
-                        type: type
+                        date: new Date(request.body.date),
+                        commission: request.body.commission,
+                        regfee: request.body.fee
                     }
                 }
             }
@@ -74,13 +78,18 @@ app.post("/import", async (request, response) => {
             });
     } else {
         let obj = {
-            ticker: request.body.ticker,
+            ticker: t,
             transactions: [
                 {
+                    quantity: request.body.quantity,
                     amount: request.body.amount,
-                    price: Math.abs(request.body.price),
+                    description: request.body.description,
+                    action: action,
+                    price: request.body.price,
                     broker: request.body.broker,
-                    type: type
+                    date: new Date(request.body.date),
+                    commission: request.body.commission,
+                    regfee: request.body.fee
                 }
             ]
         }
@@ -96,12 +105,21 @@ app.post("/import", async (request, response) => {
 });
 
 app.get("/", (request, response) => {
-    // response.json({ name: "good" })
-    let query = request.params.query;
-    console.log(query);
+
+    let query = request.query.query;
+    let date = request.query.date
 
     if (query) {
         collection.find({ ticker: query }).toArray((error, result) => {
+            if (error) {
+                return response.status(500).send(error);
+            }
+            response.send(result);
+        });
+    } else if (date) {
+        let date1 = new Date(date);
+
+        collection.find({ "transactions.date": { $gte: date1 } }).toArray((error, result) => {
             if (error) {
                 return response.status(500).send(error);
             }
@@ -118,12 +136,31 @@ app.get("/", (request, response) => {
 });
 
 app.get("/:id", (request, response) => {
-    collection.find({ ticker: request.params.id }).toArray((error, result) => {
-        if (error) {
-            return response.status(500).send(error);
-        }
-        response.send(result);
-    });
+
+    let date = request.query.date
+
+    if (date) {
+        let date1 = new Date(date);
+
+        collection.find({ ticker: request.params.id, "transactions.date": { $gte: date1 } }).toArray((error, result) => {
+            if (error) {
+                return response.status(500).send(error);
+            }
+            console.log(result.transactions)
+            response.send(result);
+        });
+
+    } else {
+        collection.find({ ticker: request.params.id }).toArray((error, result) => {
+            if (error) {
+                return response.status(500).send(error);
+            }
+            response.send(result);
+        });
+    }
+
+
+
 });
 
 
