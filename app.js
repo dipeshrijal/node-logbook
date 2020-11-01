@@ -31,6 +31,11 @@ app.get("/health", (request, response) => {
     response.send({ healthy: true });
 })
 
+app.get("/clean", (request, response) => {
+    collection.remove({});
+    response.send({ "remove": true });
+})
+
 // app.post("/import", (request, response) => {
 //     console.log(request.body);
 //     collection.insertOne(request.body, (error, result) => {
@@ -45,7 +50,6 @@ app.post("/import", async (request, response) => {
 
     let t = request.body.ticker.split(" ")[0];
     let ticker = await collection.find({ "ticker": t }).toArray();
-
     let action = "Buy";
 
     if (request.body.description.startsWith("Sold")) {
@@ -77,28 +81,32 @@ app.post("/import", async (request, response) => {
                 response.send(result.result);
             });
     } else {
-        let obj = {
-            ticker: t,
-            transactions: [
-                {
-                    quantity: request.body.quantity,
-                    amount: request.body.amount,
-                    description: request.body.description,
-                    action: action,
-                    price: request.body.price,
-                    broker: request.body.broker,
-                    date: new Date(request.body.date),
-                    commission: request.body.commission,
-                    regfee: request.body.fee
-                }
-            ]
-        }
-        collection.insertOne(obj, (error, result) => {
-            if (error) {
-                return response.status(500).send(error);
+        if (t === "{{SYMBOL}}") {
+            response.send({ "result": "No Match" })
+        } else {
+            let obj = {
+                ticker: t,
+                transactions: [
+                    {
+                        quantity: request.body.quantity,
+                        amount: request.body.amount,
+                        description: request.body.description,
+                        action: action,
+                        price: request.body.price,
+                        broker: request.body.broker,
+                        date: new Date(request.body.date),
+                        commission: request.body.commission,
+                        regfee: request.body.fee
+                    }
+                ]
             }
-            response.send(result.result);
-        });
+            collection.insertOne(obj, (error, result) => {
+                if (error) {
+                    return response.status(500).send(error);
+                }
+                response.send(result.result);
+            });
+        }
 
     }
 
