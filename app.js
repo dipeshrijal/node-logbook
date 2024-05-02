@@ -3,7 +3,10 @@ const BodyParser = require("body-parser");
 const MongoClient = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectID;
 const cors = require('cors');
-const CONNECTION_URL = "mongodb+srv://logbook:logbook@sbx.nkmpm.azure.mongodb.net/<dbname>?retryWrites=true&w=majority";
+// const CONNECTION_URL = "mongodb+srv://logbook:logbook@sbx.nkmpm.azure.mongodb.net/<dbname>?retryWrites=true&w=majority";
+
+const CONNECTION_URL = "mongodb+srv://logbook:logbook@logbook.eyaj0tg.mongodb.net/?retryWrites=true&w=majority&appName=logbook";
+
 // const CONNECTION_URL = "mongodb://localhost:27017";
 const DATABASE_NAME = "logbook";
 const _ = require('lodash');
