@@ -10,7 +10,7 @@ const CONNECTION_URL = "mongodb+srv://logbook:logbook@logbook.eyaj0tg.mongodb.ne
 // const CONNECTION_URL = "mongodb://localhost:27017";
 const DATABASE_NAME = "logbook";
 const _ = require('lodash');
-
+console.log("test")
 
 var app = Express();
 app.use(BodyParser.json());
